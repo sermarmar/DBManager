@@ -6,7 +6,7 @@ public class Main {
         Manager manager = new Manager();
 
 
-        manager.ejecutarSelect("SELECT * FROM prueba");
+        manager.ejecutarSelect("SELECT * FROM prueba", Object.class);
     }
 
 }

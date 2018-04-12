@@ -1,7 +1,12 @@
 package com.cice.db;
 
+import javax.sql.RowSet;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetProvider;
 import java.awt.peer.SystemTrayPeer;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Manager {
 
@@ -69,25 +74,20 @@ public class Manager {
         return esDesconectado;
     }
 
-    public void ejecutarSelect(String sql){
+    public CachedRowSet ejecutarSelect(String sql) throws SQLException {
+        CachedRowSet cache = null;
+        ResultSet res = null;
         conectarBBDD();
         try{
-            ResultSet res = statement.executeQuery(sql);
-            while(res.next()){
-                int numeroCol = res.getMetaData().getColumnCount();
-
-                ResultSetMetaData resMetaData = res.getMetaData();
-                String columnTest = resMetaData.getColumnLabel(0);
-                System.out.println(columnTest);
-
-                /*for(int i=0; i<numeroCol;i++){
-                    String dato = res.getString(i);
-                    System.out.println(dato);
-                }*/
-
-            }
-        }catch (SQLException e){
+            statement = conn.createStatement();
+            res = statement.executeQuery(sql);
+            cache = RowSetProvider.newFactory().createCachedRowSet();
+            cache.populate(res);
+        }catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            res.close();
+            statement.close();
         }
 
         desconectarBBDD();
